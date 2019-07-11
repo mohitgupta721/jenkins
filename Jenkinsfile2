@@ -9,7 +9,7 @@ pipeline {
        stage('first') {
             agent { label 'master' }
             steps {
-               echo ${env.DEVELOPER_NAME}
+               echo "${env.DEVELOPER_NAME}"
             }
         }
     }
