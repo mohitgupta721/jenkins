@@ -14,13 +14,21 @@ pipeline {
             }
         }
         stage('Build apk'){
+        agent { label 'master'}
+        steps{
+
+
         sh './gradlew clean assembleRelease'
         echo "Build is successfull apk file has been generated for release"
+        }
         }      
         stage('Signing APK'){
+        agent { label 'master'}
+        steps{
+
         step([$class: 'SignApksBuilder', androidHome: '/opt/android-sdk-linux', apksToSign: 'app/build/outputs/apk/app-*-unsigned.apk', archiveSignedApks: false, keyAlias: 'dhwani', keyStoreId: 'apksigncreds', zipalignPath: '/opt/android-sdk-linux/build-tools/28.0.3/zipalign'])
 
-        }
+        }}
     }
 }
 
