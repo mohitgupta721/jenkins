@@ -6,11 +6,21 @@ pipeline {
        color = "blue"
    }
    stages {
-       stage('first') {
+       stage('Get source from bitbucket') {
             agent { label 'master' }
             steps {
-               echo "${env.DEVELOPER_NAME}"
+               git credentialsId: 'mohit-gupta', url: 'https://mohit-gupta@bitbucket.org/dhwanidevs/jagrutkrishak_mobile.git'
+               
             }
+        }
+        stage('Build apk'){
+        sh './gradlew clean assembleRelease'
+        echo "Build is successfull apk file has been generated for release"
+        }      
+        stage('Signing APK'){
+        step([$class: 'SignApksBuilder', androidHome: '/opt/android-sdk-linux', apksToSign: 'app/build/outputs/apk/app-*-unsigned.apk', archiveSignedApks: false, keyAlias: 'dhwani', keyStoreId: 'apksigncreds', zipalignPath: '/opt/android-sdk-linux/build-tools/28.0.3/zipalign'])
+
         }
     }
 }
+
