@@ -7,7 +7,7 @@ pipeline {
        stage('first') {
             agent { label 'master' }
             steps {
-               echo ${env.DEVELOPER_NAME}
+               print ${env.DEVELOPER_NAME}
             }
         }
     }
