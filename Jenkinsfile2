@@ -3,15 +3,33 @@
 pipeline {
    agent any
    environment {
-       color = "blue"
+       jks_file = '/var/lib/jenkins/key.jks'
+       key_user = 'dhwani'
+       key_pass = 'dhwani'
    }
    stages {
        stage('Get source from bitbucket') {
-            agent { label 'master' }
             steps {
-               git credentialsId: 'mohit-gupta', url: 'https://mohit-gupta@bitbucket.org/dhwanidevs/jagrutkrishak_mobile.git'
-               
+                git credentialsId: 'bitbucket-dhwani', url: 'https://mohit-gupta@bitbucket.org/dhwanidevs/jagrutkrishak_mobile.git'
             }
-       }}
-}
-    
+            
+       }
+       stage('Build Apk'){
+       steps{
+           sh 'chmod +x gradlew'
+           sh './gradlew clean assembleRelease'
+       }
+       }
+       stage('Compressing & Signing apk'){
+       steps{
+       sh "$ANDROID_BUILD_TOOLS/zipalign -v -p 4 app/build/outputs/apk/release/app-*-unsigned.apk app/build/outputs/apk/release/app-unsigned-aligned.apk"
+       sh "$ANDROID_BUILD_TOOLS/apksigner sign --ks $jks_file --ks-pass pass:$key_pass --out release-signed.apk app/build/outputs/apk/release/app-unsigned-aligned.apk"
+       }
+       }
+       stage('Future scope like publish to playstore'){
+       steps{
+       echo "Need to write code for it "
+       }
+       }
+       }
+   }
