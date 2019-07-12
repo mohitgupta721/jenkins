@@ -17,7 +17,7 @@ pipeline {
         agent { label 'master'}
         steps{
         sh 'pwd'
-        sh './gradlew clean assembleRelease'
+        sh 'gradle clean assembleRelease'
         echo "Build is successfull apk file has been generated for release"
         }
         }      
