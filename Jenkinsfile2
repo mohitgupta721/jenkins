@@ -3,33 +3,33 @@
 pipeline {
    agent any
    environment {
-       jks_file = '/var/lib/jenkins/key.jks'
-       key_user = 'dhwani'
-       key_pass = 'dhwani'
+       jks_file = '/var/lib/jenkins/rishta.jks'
+       key_user = 'speakup'
+       key_pass = 'Dhwani@123'
    }
    stages {
        stage('Get source from bitbucket') {
             steps {
-                git credentialsId: 'bitbucket-dhwani', url: 'https://mohit-gupta@bitbucket.org/dhwanidevs/jagrutkrishak_mobile.git'
+                git branch: 'jsm_dev_1.0', changelog: false, credentialsId: 'bitbucket-dhwani', poll: false, url: 'https://mohit-gupta@bitbucket.org/dhwanidevs/goatry_app_new.git'
             }
             
        }
        stage('Build Apk'){
        steps{
            sh 'chmod +x gradlew'
-           sh './gradlew clean assembleRelease'
+           sh './gradlew clean assemble'
        }
        }
        stage('Compressing & Signing apk'){
        steps{
-       sh "$ANDROID_BUILD_TOOLS/zipalign -v -p 4 app/build/outputs/apk/release/app-*-unsigned.apk app/build/outputs/apk/release/app-unsigned-aligned.apk"
-       sh "$ANDROID_BUILD_TOOLS/apksigner sign --ks $jks_file --ks-pass pass:$key_pass --out release-signed.apk app/build/outputs/apk/release/app-unsigned-aligned.apk"
+       sh "$ANDROID_BUILD_TOOLS/zipalign -v -p 4 app/build/outputs/apk/development/release/app-*-unsigned.apk app/build/outputs/apk/development/release/app-unsigned-aligned.apk"
+       sh "$ANDROID_BUILD_TOOLS/apksigner sign --ks $jks_file --ks-pass pass:$key_pass --out release-signed.apk app/build/outputs/apk/development/release/app-unsigned-aligned.apk"
        }
        }
        stage('Future scope like publish to playstore'){
        steps{
-       echo "Need to write code for it "
+       androidApkUpload apkFilesPattern: 'release-signed.apk', googleCredentialsId: 'app-automation', recentChangeList: [[language: 'en-US', text: 'Bug fixes AM']], trackName: 'production'
        }
        }
-       }
-   }
+       
+   }}
